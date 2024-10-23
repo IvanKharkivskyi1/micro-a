@@ -3,35 +3,50 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 
 module.exports = {
+  mode: "development",
   entry: "./src/index.js",
-  mode: "production",
   output: {
-    publicPath: "auto",
-  },
-  devServer: {
-    port: 3001,
-    hot: false,
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'main.js',
   },
   module: {
     rules: [
       {
         test: /\.jsx?$/,
-        use: "babel-loader",
         exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
       },
     ],
   },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+    port: 3000,
+    hot: true,
+    liveReload: true,
+  },
   plugins: [
     new ModuleFederationPlugin({
-      name: "microA",
-      filename: "remoteEntry.js",
+      name: 'microA',
+      filename: 'remoteEntry.js',
       exposes: {
-        "./App": "./src/App",
+        './App': './src/App',
       },
-      shared: { react: { singleton: true }, "react-dom": { singleton: true } },
+      shared: {
+        react: {
+          singleton: true,
+        },
+        'react-dom': {
+          singleton: true,
+        },
+      },
     }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      filename: 'index.html',
     }),
   ],
 };
